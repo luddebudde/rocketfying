@@ -1,44 +1,53 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
-import { app, game } from "./gameObject";
+import { app, world } from "./world";
+import { createWorldObject } from "./createWorldObject";
+import { createSprite } from "./createSprite";
 
 export type Planet = {
+  type: "planet";
+  x: number;
+  y: number;
+  vel: Vec2;
+  width: number;
+  height: number;
+  gravitation: number;
+  radius: number;
+  rotation: number;
+  sprite: Sprite;
+};
+
+export type Vec2 = {
   x: number;
   y: number;
 };
 
-type Vec2 = {
-  x: number;
-  y: number;
+export const origo = () => {
+  return { x: 0, y: 0 };
 };
 
 export const createPlanet = async (pos: Vec2) => {
-  const container = new Container();
-  app.stage.addChild(container);
+  const rotation = Math.random() * Math.PI * 2;
+  const sprite: Sprite = await createSprite(
+    "/public/planet.png",
+    pos,
+    128,
+    128,
+    rotation
+  );
 
-  //   const sprite = Assets.load("/public/planet.png");
-  //   const sprite = Assets.load("https://pixijs.com/assets/bunny.png");
-  //   const texture: Texture = await Assets.load(
-  //     "https://pixijs.com/assets/bunny.png"
-  //   );
+  const planet: Planet = {
+    type: "planet",
+    x: pos.x,
+    y: pos.y,
+    vel: origo(),
+    width: 256,
+    height: 256,
+    gravitation: 10,
+    radius: 256,
+    rotation: rotation,
+    sprite: sprite,
+  };
 
-  const sprite = Assets.load("/public/planet.png")
-    .then((texture) => {
-      const sprite = new Sprite(texture);
-
-      sprite.x = pos.x;
-      sprite.y = pos.y;
-      sprite.width = 256;
-      sprite.height = 256;
-      sprite.pivot.x = sprite.width / 2;
-      sprite.pivot.y = sprite.height / 2;
-      sprite.rotation = Math.random() * Math.PI * 2;
-
-      console.log(sprite.height);
-
-      container.addChild(sprite);
-      game.planets.push(sprite);
-    })
-    .catch((err) => {
-      console.error("Kunde inte ladda planet-textur:", err);
-    });
+  createWorldObject(planet);
+  world.planets.push(planet);
 };
