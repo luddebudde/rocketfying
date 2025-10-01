@@ -1,9 +1,11 @@
-import { Assets, Container, Sprite } from "pixi.js";
+import { Assets, Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { createPlanet } from "./createPlanet";
-import { app, world } from "./world";
+import { app, screenSize, world } from "./world";
 import { createPlayer, player } from "./createPlayer";
 import { keys, setupKeyboardListeners } from "./keyListner";
 import { add } from "./math";
+import { changeWorldObject } from "./changeWorldObject";
+import { worldContainer } from "./createSprite";
 
 (async () => {
   await app.init({
@@ -11,25 +13,22 @@ import { add } from "./math";
     preference: "webgl",
     background: "#000000",
     antialias: true,
+    // forceCanvas: true, // detta fungerar här
   });
 
   document.body.appendChild(app.canvas);
 
-  const backgroundTexture = await Assets.load("/public/background.png");
-  const bgContainer = new Container();
-  app.stage.addChildAt(bgContainer, 0);
+  const bgTexture: Texture = await Assets.load("/public/background.png");
+  const bgSprite: TilingSprite = new TilingSprite({
+    texture: bgTexture,
+    width: app.screen.width,
+    height: app.screen.height,
+  });
+  console.log("lol");
 
-  const spriteWidth = backgroundTexture.width;
-  const spriteHeight = backgroundTexture.height;
+  bgSprite.tileScale.set(1.2, 1.2);
 
-  for (let y = 0; y < app.screen.height * 1.2; y += spriteHeight + 1) {
-    for (let x = 0; x < app.screen.width * 1.2; x += spriteWidth) {
-      const sprite = new Sprite(backgroundTexture);
-      sprite.y = y;
-      sprite.x = x;
-      bgContainer.addChild(sprite);
-    }
-  }
+  app.stage.addChild(bgSprite);
 
   for (let i = 0; i < 5; i++) {
     createPlanet({
@@ -39,6 +38,10 @@ import { add } from "./math";
   }
 
   setupKeyboardListeners();
+
+  player.sprite.x = app.screen.width / 2;
+  player.sprite.y = app.screen.height / 2;
+  worldContainer.addChild(player.sprite);
 
   app.ticker.add((time) => {
     if (keys["KeyW"]) {
@@ -60,43 +63,19 @@ import { add } from "./math";
       console.log("SPACE!");
     }
 
-    world.planets.forEach((planet) => {
-      // planet.sprite.pivot.x = planet.width / 2;
-      // planet.sprite.pivot.y = planet.height / 2;
-      planet.sprite.rotation -= 0.05 * time.deltaTime;
+    worldContainer.x -= player.vel.x;
+    worldContainer.y -= player.vel.y;
 
-      bgContainer.children.forEach((child) => {
-        // const sprite = child as Sprite;
-        // sprite.x += 0.5;
-        // sprite.y += 0.5;
-        // if (sprite.y >= app.screen.height) {
-        //   sprite.y = -sprite.height;
-        // }
-        // if (sprite.x >= app.screen.width) {
-        //   sprite.x = -sprite.width;
-        // }
-      });
+    bgSprite.tilePosition.x -= player.vel.x / 10;
+    bgSprite.tilePosition.y -= player.vel.y / 10;
+
+    world.planets.forEach((planet) => {
+      planet.sprite.rotation -= 0.05 * time.deltaTime;
     });
 
     world.worldObjects.forEach((worldObject) => {
-      // worldObject.sprite.pivot.x = worldObject.radius / 2;
-      // worldObject.sprite.pivot.y = worldObject.radius / 2;
-      // worldObject.sprite.width = worldObject.radius;
-      // worldObject.sprite.height = worldObject.radius;
-      // worldObject.sprite.pivot.set(
-      //   worldObject.sprite.width / 2,
-      //   worldObject.sprite.height / 2
-      // );
-
-      worldObject.sprite.anchor.set(0.5);
-
-      worldObject.x = worldObject.x + worldObject.vel.x;
-      worldObject.y = worldObject.y + worldObject.vel.y;
-
-      worldObject.sprite.x = worldObject.x;
-      worldObject.sprite.y = worldObject.y;
-
-      // worldObject.sprite.rotation = worldObject.rotation;
+      changeWorldObject(worldObject, "x", worldObject.vel.x);
+      changeWorldObject(worldObject, "y", worldObject.vel.y);
     });
   });
 })();

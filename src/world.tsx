@@ -1,5 +1,5 @@
 import { Application } from "pixi.js";
-import { Planet } from "./createPlanet";
+import { Planet, Vec2 } from "./createPlanet";
 import { Player } from "./createPlayer";
 
 type World = {
@@ -13,3 +13,9 @@ export const world: World = {
   planets: [],
   worldObjects: [],
 };
+
+export const screenSize: Vec2 = {
+  x: app.screen.width,
+  y: app.screen.height,
+};
+// console.log(screenSize);
