@@ -3,7 +3,7 @@ import { origo, Vec2 } from "./createPlanet";
 import { createSprite } from "./createSprite";
 import { createWorldObject } from "./createWorldObject";
 import { screenSize } from "./world";
-import { divVar } from "./math";
+import { divVar } from "./math/vec";
 
 export type Player = {
   type: "player";
@@ -19,14 +19,9 @@ export type Player = {
 export const createPlayer = async (pos: Vec2) => {
   //   const sprite = ;
 
+  // const playerPos = divVar(getScreenSize(), 2);
   const rotation = 0;
-  const sprite = await createSprite(
-    "/public/rocket.png",
-    pos,
-    32,
-    64,
-    rotation
-  );
+  const sprite = await createSprite("/rocket.png", pos, 32, 64, rotation);
 
   const player: Player = {
     type: "player",

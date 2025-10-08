@@ -3,8 +3,7 @@ import { Vec2 } from "./createPlanet";
 import { app } from "./world";
 
 export const worldContainer = new Container();
-app.stage.addChild(worldContainer);
-
+// app.stage.addChild(worldContainer);
 export const createSprite = async (
   img: string,
   pos: Vec2,
@@ -22,10 +21,15 @@ export const createSprite = async (
   sprite.height = height;
   sprite.rotation = rotation;
 
-  console.log(img);
+  // console.log(img);
+
+  // console.log(sprite, "sprite", app, "app");
 
   worldContainer.addChild(sprite);
 
   // app.stage.addChild(sprite);
+  if (!app.stage.getChildByLabel(worldContainer)) {
+    app.stage.addChild(worldContainer);
+  }
   return sprite;
 };

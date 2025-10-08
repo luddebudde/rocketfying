@@ -2,6 +2,7 @@ import { Assets, Container, Sprite, Texture } from "pixi.js";
 import { app, world } from "./world";
 import { createWorldObject } from "./createWorldObject";
 import { createSprite } from "./createSprite";
+import { findElement } from "./findElement";
 
 export type Planet = {
   type: "planet";
@@ -11,6 +12,7 @@ export type Planet = {
   width: number;
   height: number;
   gravitation: number;
+  mass: number;
   radius: number;
   rotation: number;
   sprite: Sprite;
@@ -25,13 +27,27 @@ export const origo = () => {
   return { x: 0, y: 0 };
 };
 
-export const createPlanet = async (pos: Vec2) => {
+export const createPlanet = async (
+  pos: Vec2,
+  size: number,
+  spriteName: string,
+  vel: Vec2 = origo()
+) => {
+  const sprites = [
+    ["sun", "/sun.png"],
+    ["earth", "/planet.png"],
+  ];
+
+  // console.log(spriteName);
+
+  // console.log(findElement(sprites, spriteName), "return");
+
   const rotation = Math.random() * Math.PI * 2;
   const sprite: Sprite = await createSprite(
-    "/public/planet.png",
+    findElement(sprites, spriteName)[1],
     pos,
-    128,
-    128,
+    size,
+    size,
     rotation
   );
 
@@ -39,11 +55,12 @@ export const createPlanet = async (pos: Vec2) => {
     type: "planet",
     x: pos.x,
     y: pos.y,
-    vel: origo(),
-    width: 256,
-    height: 256,
-    gravitation: 10,
-    radius: 256,
+    vel: vel,
+    width: size,
+    height: size,
+    gravitation: size,
+    mass: size,
+    radius: size / 2,
     rotation: rotation,
     sprite: sprite,
   };
