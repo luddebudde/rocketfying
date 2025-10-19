@@ -1,16 +1,23 @@
 import { createPlanet, origo, Vec2 } from "./createPlanet";
-import { calculateGravity } from "./math/calculateGravity";
-import { getDistance } from "./math/getDistance";
-import { add, divVar, multVar, sqrtVec } from "./math/vec";
-import { GForce } from "./world";
+import { add } from "./math/vec";
+
+type ProtoPlanet = {
+  size: number;
+  mass: number;
+  x: number;
+  y: number;
+  vel: Vec2;
+};
 
 export const createSolarSystem = (centerPos: Vec2) => {
-  const planetCount = Math.ceil(Math.random() * 3 + 2);
-  const sun = {
-    size: 628,
-    mass: 628,
+  const sunScale = 20;
+  const planetCount = Math.ceil(Math.random() * 0 + 1);
+  const sun: ProtoPlanet = {
+    size: 500,
+    mass: 628 * 100,
     x: centerPos.x,
     y: centerPos.y,
+    vel: origo(),
   };
   //   const planetCount = 1;
   //   const sunSize = 628;
@@ -21,35 +28,39 @@ export const createSolarSystem = (centerPos: Vec2) => {
 
   createPlanet(centerPos, sun.size * 2, "sun");
   for (let i = 0; i < planetCount; i++) {
-    const distanceOut = sun.size * 1.2 + distanceMeter;
-    // distanceMeter += distance;
+    const distanceOut = sun.size * 1.4;
+    //  distanceMeter;
+    // distanceMeter += distanceOut;
     const angle = Math.random() * 2 * Math.PI;
-    const planetSize = Math.random() * 128 + 32;
+    const planetSize = 100 * (sunScale / 20);
     const pos = {
       x: Math.cos(angle) * distanceOut,
       y: Math.sin(angle) * distanceOut,
     };
 
-    const planet = {
+    const planet: ProtoPlanet = {
       size: planetSize,
       mass: planetSize,
       x: pos.x,
       y: pos.y,
-      veL: origo(),
+      vel: origo(),
     };
 
-    // const distanceTo = getDistance(centerPos, pos);
-    const gForce = calculateGravity(GForce, sun, planet);
-    const vel = sqrtVec(divVar(multVar(gForce, distanceOut), planet.mass));
+    // const gForce = calculateGravity(GForce, planet, sun);
+    // F = mw^2r
+    // gForce = (mv^2) / r
+    // Math.sqrt(Fr / m) = v
 
-    console.log(
-      "solarsystem",
-      sqrtVec(divVar(multVar(gForce, distanceOut), planet.mass)),
-      planet
-    );
+    //  = (mv^2) / r
 
-    planet.veL = vel;
+    // const centriFugalForce = divVar(
+    //   multVar(mult(gForce, gForce), planet.mass),
+    //   distanceOut
+    // );
+    // const centripetalForce = sqrtVec(
+    //   divVar(multVar(centriFugalForce, distanceOut), planet.mass)
+    // );
 
-    createPlanet(add(centerPos, pos), 100, "earth", vel);
+    createPlanet(add(centerPos, pos), planet.size, "earth", planet.vel);
   }
 };

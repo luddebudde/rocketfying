@@ -1,6 +1,8 @@
 import { Assets, Container, Sprite, Texture, TilingSprite } from "pixi.js";
-import { createPlanet, Vec2 } from "./createPlanet";
-import { app, GForce, world } from "./world";
+import { createPlanet, origo, Vec2 } from "./createPlanet";
+import { simulationSpeed, world } from "./world";
+import { app } from "./app";
+import { GForce } from "./world";
 import { createPlayer, player } from "./createPlayer";
 import { keys, setupKeyboardListeners } from "./keyListner";
 import { add, divVar, multVar, revDivVar } from "./math/vec";
@@ -38,6 +40,8 @@ import { calculateGravity } from "./math/calculateGravity";
 
   // const worldContainer = new Container();
   // app.stage.addChild(worldContainer);
+
+  // app.stage.scale
 
   const bgTexture: Texture = await Assets.load("/background.png");
   const bgSprite: TilingSprite = new TilingSprite({
@@ -92,17 +96,17 @@ import { calculateGravity } from "./math/calculateGravity";
       player.sprite.rotation += (Math.PI * 2) / 180;
     }
     if (keys["Space"]) {
-      player.vel.x *= 0.99;
-      player.vel.y *= 0.99;
+      player.vel.x *= 0.9;
+      player.vel.y *= 0.9;
     }
 
     // console.log("loop");
 
-    worldContainer.x -= player.vel.x;
-    worldContainer.y -= player.vel.y;
+    worldContainer.x -= player.vel.x * simulationSpeed;
+    worldContainer.y -= player.vel.y * simulationSpeed;
 
-    bgSprite.tilePosition.x -= player.vel.x / 10;
-    bgSprite.tilePosition.y -= player.vel.y / 10;
+    bgSprite.tilePosition.x -= (player.vel.x / 10) * simulationSpeed;
+    bgSprite.tilePosition.y -= (player.vel.y / 10) * simulationSpeed;
 
     world.planets.forEach((planet) => {
       world.planets.forEach((secondPlanet) => {
@@ -110,18 +114,28 @@ import { calculateGravity } from "./math/calculateGravity";
           return;
         }
 
-        const force = calculateGravity(GForce, planet, secondPlanet);
+        const gravityForce = origo();
+        // const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
-        changeWorldObjectVec(planet, "vel", divVar(force, time.deltaTime));
+        // console.log(gravityForce);
+
+        // changeWorldObjectVec(
+        //   planet,
+        //   "vel",
+        //   multVar(divVar(gravityForce, time.deltaTime), simulationSpeed)
+        // );
+        planet.vel.x += gravityForce.x * time.deltaTime * simulationSpeed;
+        planet.vel.y += gravityForce.y * time.deltaTime * simulationSpeed;
       });
       // console.log(planet);
 
-      planet.sprite.rotation -= (0.05 * time.deltaTime) / (planet.mass * 0.05);
+      planet.sprite.rotation -=
+        ((0.05 * time.deltaTime) / (planet.mass * 0.05)) * simulationSpeed;
     });
 
     world.worldObjects.forEach((worldObject) => {
-      changeWorldObject(worldObject, "x", worldObject.vel.x);
-      changeWorldObject(worldObject, "y", worldObject.vel.y);
+      changeWorldObject(worldObject, "x", worldObject.vel.x * simulationSpeed);
+      changeWorldObject(worldObject, "y", worldObject.vel.y * simulationSpeed);
     });
   });
 })();

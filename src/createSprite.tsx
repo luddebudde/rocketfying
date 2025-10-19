@@ -1,6 +1,8 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
 import { Vec2 } from "./createPlanet";
-import { app } from "./world";
+import { cameraScale } from "./world";
+import { app } from "./app";
+import { multVar } from "./math/vec";
 
 export const worldContainer = new Container();
 // app.stage.addChild(worldContainer);
@@ -26,6 +28,12 @@ export const createSprite = async (
   // console.log(sprite, "sprite", app, "app");
 
   worldContainer.addChild(sprite);
+
+  // console.log(sprite.scale);
+
+  // sprite.scale = multVar(sprite.scale, cameraScale);
+
+  // sprite.scale *= cameraScale;
 
   // app.stage.addChild(sprite);
   if (!app.stage.getChildByLabel(worldContainer)) {
