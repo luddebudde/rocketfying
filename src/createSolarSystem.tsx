@@ -16,7 +16,7 @@ export const createSolarSystem = (centerPos: Vec2) => {
   const planetCount = Math.ceil(Math.random() * 0 + 1);
   const sunSize = 1000
   const sun: ProtoPlanet = {
-    size: 1000,
+    size: sunSize,
     mass: sunSize * sunSize,
     x: centerPos.x,
     y: centerPos.y,
