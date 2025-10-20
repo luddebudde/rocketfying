@@ -117,9 +117,9 @@ import { calculateGravity } from "./math/calculateGravity";
         const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
         const acceleration = divVar(gravityForce, planet.mass);
-        const dv = multVar(acceleration, time.deltaTime);
-        planet.vel.x += dv.x * time.deltaTime;
-        planet.vel.y += dv.y * time.deltaTime;
+        const deltaV = multVar(acceleration, time.deltaTime);
+        planet.vel.x += deltaV.x;
+        planet.vel.y += deltaV.y;
       });
 
       planet.sprite.rotation -=
@@ -128,8 +128,8 @@ import { calculateGravity } from "./math/calculateGravity";
 
 
     world.worldObjects.forEach((worldObject) => {
-      changeWorldObject(worldObject, "x", worldObject.vel.x * simulationSpeed);
-      changeWorldObject(worldObject, "y", worldObject.vel.y * simulationSpeed);
+      changeWorldObject(worldObject, "x", worldObject.vel.x * time.deltaTime);
+      changeWorldObject(worldObject, "y", worldObject.vel.y * time.deltaTime);
     });
   });
 })();

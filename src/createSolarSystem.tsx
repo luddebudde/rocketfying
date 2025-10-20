@@ -27,7 +27,7 @@ export const createSolarSystem = (centerPos: Vec2) => {
   for (let i = 0; i < planetCount; i++) {
       const planetSize = 0.1 * sun.size;
       // TODO random distance from sun's surface
-      const distanceFromSurface = 0
+      const distanceFromSurface = 100
     const distanceOut = sun.size / 2 + planetSize / 2 + distanceFromSurface;
       const angle = -Math.PI / 2
       //   TODO add back random angle
@@ -54,10 +54,10 @@ export const createSolarSystem = (centerPos: Vec2) => {
 
       // From the formula for centripetal force, we can derive the orbital speed:
       // F = mv^2 / r
-      const speed = Math.sqrt(centripetalForce * distanceOut / planet.mass)
-      const velDir = rotateVec90(getDirection(planet, sun))
-      const vel = multVar(velDir, speed)
-      planet.vel = vel;
+      const speed = Math.sqrt( sun.mass * GForce / distanceOut)
+      const dirToSun = getDirection(planet, sun);
+      const tangentDir = rotateVec90(dirToSun)
+      planet.vel = multVar(tangentDir, speed);
 
     createPlanet(pos, planet.mass, planet.size, "earth", planet.vel);
   }
