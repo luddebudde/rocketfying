@@ -114,28 +114,22 @@ import { calculateGravity } from "./math/calculateGravity";
           return;
         }
 
-        const gravityForce = origo();
-        // const gravityForce = calculateGravity(GForce, planet, secondPlanet);
+        const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
-        // console.log(gravityForce);
-
-        // changeWorldObjectVec(
-        //   planet,
-        //   "vel",
-        //   multVar(divVar(gravityForce, time.deltaTime), simulationSpeed)
-        // );
-        planet.vel.x += gravityForce.x * time.deltaTime * simulationSpeed;
-        planet.vel.y += gravityForce.y * time.deltaTime * simulationSpeed;
+        const acceleration = divVar(gravityForce, planet.mass);
+        const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
+        planet.vel.x += deltaV.x;
+        planet.vel.y += deltaV.y;
       });
-      // console.log(planet);
 
       planet.sprite.rotation -=
         ((0.05 * time.deltaTime) / (planet.mass * 0.05)) * simulationSpeed;
     });
 
+
     world.worldObjects.forEach((worldObject) => {
-      changeWorldObject(worldObject, "x", worldObject.vel.x * simulationSpeed);
-      changeWorldObject(worldObject, "y", worldObject.vel.y * simulationSpeed);
+      changeWorldObject(worldObject, "x", worldObject.vel.x * time.deltaTime * simulationSpeed);
+      changeWorldObject(worldObject, "y", worldObject.vel.y * time.deltaTime * simulationSpeed);
     });
   });
 })();
