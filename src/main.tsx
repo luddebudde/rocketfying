@@ -73,7 +73,7 @@ import { calculateGravity } from "./math/calculateGravity";
 
   setupKeyboardListeners();
 
-  player.sprite.x = app.screen.width / 2;
+      player.sprite.x = app.screen.width / 2;
   player.sprite.y = app.screen.height / 2;
   worldContainer.addChild(player.sprite);
 
@@ -114,24 +114,18 @@ import { calculateGravity } from "./math/calculateGravity";
           return;
         }
 
-        const gravityForce = origo();
-        // const gravityForce = calculateGravity(GForce, planet, secondPlanet);
+        const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
-        // console.log(gravityForce);
-
-        // changeWorldObjectVec(
-        //   planet,
-        //   "vel",
-        //   multVar(divVar(gravityForce, time.deltaTime), simulationSpeed)
-        // );
-        planet.vel.x += gravityForce.x * time.deltaTime * simulationSpeed;
-        planet.vel.y += gravityForce.y * time.deltaTime * simulationSpeed;
+        const acceleration = divVar(gravityForce, planet.mass);
+        const dv = multVar(acceleration, time.deltaTime);
+        planet.vel.x += dv.x * time.deltaTime;
+        planet.vel.y += dv.y * time.deltaTime;
       });
-      // console.log(planet);
 
       planet.sprite.rotation -=
         ((0.05 * time.deltaTime) / (planet.mass * 0.05)) * simulationSpeed;
     });
+
 
     world.worldObjects.forEach((worldObject) => {
       changeWorldObject(worldObject, "x", worldObject.vel.x * simulationSpeed);

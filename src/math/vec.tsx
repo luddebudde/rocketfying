@@ -32,3 +32,24 @@ export const sqrtVec = (num1: Vec2) => ({
   x: Math.sqrt(Math.abs(num1.x)),
   y: Math.sqrt(Math.abs(num1.y)),
 });
+
+export const lengthVec = (vec: Vec2): number => {
+    return Math.hypot(vec.x, vec.y);
+}
+
+export const rotateVec90 = (vec: Vec2): Vec2 => ({
+    x: -vec.y,
+    y: vec.x,
+})
+
+const normalized = (vec: Vec2): Vec2 => {
+    const length = lengthVec(vec);
+    if(length === 0){
+        return {x: 1, y: 0};
+    }
+    return {
+        x: vec.x / length,
+        y: vec.y / length,
+    }
+}
+

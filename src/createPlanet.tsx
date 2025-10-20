@@ -30,6 +30,7 @@ export const origo = (): Vec2 => {
 
 export const createPlanet = async (
   pos: Vec2,
+  mass: number,
   size: number,
   spriteName: string,
   vel: Vec2 = origo()
@@ -52,7 +53,6 @@ export const createPlanet = async (
     rotation
   );
 
-  let mass = size * size;
   // if (spriteName === "sun") [(mass = 5000)];
 
   const planet: Planet = {

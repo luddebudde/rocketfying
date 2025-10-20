@@ -1,5 +1,8 @@
 import { createPlanet, origo, Vec2 } from "./createPlanet";
-import { add } from "./math/vec";
+import {add, lengthVec, multVar, rotateVec90} from "./math/vec";
+import {calculateGravity} from "./math/calculateGravity";
+import {GForce} from "./world";
+import {getDirection, getDistance} from "./math/getDistance";
 
 type ProtoPlanet = {
   size: number;
@@ -10,57 +13,52 @@ type ProtoPlanet = {
 };
 
 export const createSolarSystem = (centerPos: Vec2) => {
-  const sunScale = 20;
   const planetCount = Math.ceil(Math.random() * 0 + 1);
+  const sunSize = 1000
   const sun: ProtoPlanet = {
-    size: 500,
-    mass: 628 * 100,
+    size: 1000,
+    mass: sunSize * sunSize,
     x: centerPos.x,
     y: centerPos.y,
     vel: origo(),
   };
-  //   const planetCount = 1;
-  //   const sunSize = 628;
 
-  let distanceMeter = sun.size * 1;
-
-  //   F=m\omega^2r
-
-  createPlanet(centerPos, sun.size * 2, "sun");
+  createPlanet(centerPos, sun.mass, sun.size, "sun");
   for (let i = 0; i < planetCount; i++) {
-    const distanceOut = sun.size * 1.4;
-    //  distanceMeter;
-    // distanceMeter += distanceOut;
-    const angle = Math.random() * 2 * Math.PI;
-    const planetSize = 100 * (sunScale / 20);
-    const pos = {
-      x: Math.cos(angle) * distanceOut,
-      y: Math.sin(angle) * distanceOut,
-    };
+      const planetSize = 0.1 * sun.size;
+      // TODO random distance from sun's surface
+      const distanceFromSurface = 0
+    const distanceOut = sun.size / 2 + planetSize / 2 + distanceFromSurface;
+      const angle = -Math.PI / 2
+      //   TODO add back random angle
+    // const angle = Math.random() * 2 * Math.PI;
+      const relPos: Vec2 = {
+          x: Math.cos(angle) * distanceOut,
+          y: Math.sin(angle) * distanceOut,
+      }
+    const pos = add(relPos, centerPos);
 
     const planet: ProtoPlanet = {
       size: planetSize,
-      mass: planetSize,
+      mass: planetSize * planetSize,
       x: pos.x,
       y: pos.y,
       vel: origo(),
     };
 
-    // const gForce = calculateGravity(GForce, planet, sun);
-    // F = mw^2r
-    // gForce = (mv^2) / r
-    // Math.sqrt(Fr / m) = v
+      const gravityForce = calculateGravity(GForce, planet, sun);
+      // When the orbit is circular, the centripetal force is equal to the gravitational force.
+      // gForce is a vector, but only the magnitude is needed here
+      const centripetalForce = lengthVec(gravityForce);
+      console.log('centripetalForce', centripetalForce);
 
-    //  = (mv^2) / r
+      // From the formula for centripetal force, we can derive the orbital speed:
+      // F = mv^2 / r
+      const speed = Math.sqrt(centripetalForce * distanceOut / planet.mass)
+      const velDir = rotateVec90(getDirection(planet, sun))
+      const vel = multVar(velDir, speed)
+      planet.vel = vel;
 
-    // const centriFugalForce = divVar(
-    //   multVar(mult(gForce, gForce), planet.mass),
-    //   distanceOut
-    // );
-    // const centripetalForce = sqrtVec(
-    //   divVar(multVar(centriFugalForce, distanceOut), planet.mass)
-    // );
-
-    createPlanet(add(centerPos, pos), planet.size, "earth", planet.vel);
+    createPlanet(pos, planet.mass, planet.size, "earth", planet.vel);
   }
 };
