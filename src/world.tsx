@@ -21,7 +21,7 @@ export const screenSize: Vec2 = {
 };
 
 export const worldScale = 9e8;
-export const GForce: number = 0.1;
+export const GForce: number = 0.01;
 export const simulationSpeed: number = 1;
 // export const getScreenSize = (): Vec2 => ({
 //   x: app.screen.width,

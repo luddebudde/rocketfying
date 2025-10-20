@@ -4,21 +4,21 @@ import { multVar } from "./vec";
 
 export const calculateGravity = (
   GForce: number,
-  planet1: Planet,
-  planet2: Planet
+  planet1: Pick<Planet, 'x' | 'y' | 'mass'>,
+  planet2: Pick<Planet, 'x' | 'y' | 'mass'>
 ): Vec2 => {
   const dist = getDistance(planet1, planet2);
   const direction: Vec2 = getDirection(planet1, planet2);
 
-  // console.log(dist);
+    if(dist === 0){
+        return {x: 0, y: 0};
+    }
 
-  const force: number = Math.min(
-    GForce * ((planet1.mass * planet2.mass) / Math.max(dist * dist, 1)),
-    25000
-  );
-  // console.log(dist);
+    const maxForce = 25000
+    const force: number = Math.min(
+        GForce * ((planet1.mass * planet2.mass) / (dist * dist)),
+        maxForce
+    )
 
-  // console.log(force);
-
-  return multVar(direction, force / planet1.mass);
+  return multVar(direction, force);
 };
