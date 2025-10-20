@@ -73,7 +73,7 @@ import { calculateGravity } from "./math/calculateGravity";
 
   setupKeyboardListeners();
 
-      player.sprite.x = app.screen.width / 2;
+  player.sprite.x = app.screen.width / 2;
   player.sprite.y = app.screen.height / 2;
   worldContainer.addChild(player.sprite);
 
