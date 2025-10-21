@@ -1,6 +1,5 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
 import { Vec2 } from "./createPlanet";
-import { cameraScale } from "./world";
 import { app } from "./app";
 import { multVar } from "./math/vec";
 

@@ -4,9 +4,10 @@ import { app } from "./app";
 import { createWorldObject } from "./createWorldObject";
 import { createSprite } from "./createSprite";
 import { findElement } from "./findElement";
+import { SolarSystem } from "./createSolarSystem";
 
 export type Planet = {
-  type: "planet";
+  type: string;
   x: number;
   y: number;
   vel: Vec2;
@@ -16,6 +17,8 @@ export type Planet = {
   mass: number;
   radius: number;
   rotation: number;
+  solarSystem: SolarSystem;
+
   sprite: Sprite;
 };
 
@@ -33,6 +36,7 @@ export const createPlanet = async (
   mass: number,
   size: number,
   spriteName: string,
+  solarSystem: SolarSystem,
   vel: Vec2 = origo()
 ) => {
   const sprites = [
@@ -55,8 +59,13 @@ export const createPlanet = async (
 
   // if (spriteName === "sun") [(mass = 5000)];
 
+  let planetType = "planet";
+  if (spriteName === "sun") {
+    planetType = "sun";
+  }
+
   const planet: Planet = {
-    type: "planet",
+    type: planetType,
     x: pos.x,
     y: pos.y,
     vel: vel,
@@ -66,8 +75,16 @@ export const createPlanet = async (
     mass: mass,
     radius: size / 2,
     rotation: rotation,
+    solarSystem: solarSystem,
+
     sprite: sprite,
   };
+
+  if (spriteName === "sun") {
+    solarSystem.sun = planet;
+  } else {
+    solarSystem.planets.push(planet);
+  }
 
   createWorldObject(planet);
   world.planets.push(planet);

@@ -6,14 +6,17 @@ import {
 } from "pixi.js";
 
 export const app = new Application();
+
 await app.init({
   view: document.createElement("canvas"),
   resizeTo: window,
   preference: "webgl",
   background: "#000000",
   antialias: true,
-  //   canvas: ,
+  // canvas: ,
 });
+
+// export const worldContainer = Container()
 
 document.body.appendChild(app.canvas);
 

@@ -1,48 +1,20 @@
 import { Assets, Container, Sprite, Texture, TilingSprite } from "pixi.js";
 import { createPlanet, origo, Vec2 } from "./createPlanet";
-import { simulationSpeed, world } from "./world";
+import { cameraZoom, screenSize, simulationSpeed, world } from "./world";
 import { app } from "./app";
 import { GForce } from "./world";
 import { createPlayer, player } from "./createPlayer";
 import { keys, setupKeyboardListeners } from "./keyListner";
-import { add, divVar, multVar, revDivVar } from "./math/vec";
-import { changeWorldObject, changeWorldObjectVec } from "./changeWorldObject";
+import { add, addVar, divVar, multVar, sub, subVar } from "./math/vec";
+import { changeWorldObject } from "./changeWorldObject";
 import { worldContainer } from "./createSprite";
 import { createSolarSystem } from "./createSolarSystem";
-import { getDirection, getDistance } from "./math/getDistance";
 import { calculateGravity } from "./math/calculateGravity";
-// await app.init({
-//   resizeTo: window,
-//   preference: "webgl",
-//   background: "#000000",
-//   antialias: true,
-//   // forceCanvas: true, // detta fungerar här
-// });
-
-// await app.init({
-//   resizeTo: window,
-//   preference: "webgl",
-//   background: "#000000",
-//   antialias: true,
-//   // forceCanvas: true, // detta fungerar här
-// });
-
-// await app.init({ resizeTo: window, preference: "webgl" });
+import { calculateOrbitSpeed } from "./math/calculateOrbitSpeed";
+import { findClosestPlanet } from "./findClosestPlanet";
+import { getDistance } from "./math/getDistance";
 
 (async () => {
-  // await app.init({
-  //   resizeTo: window,
-  //   preference: "webgl",
-  //   background: "#000000",
-  //   antialias: true,
-  // // });
-  // document.body.appendChild(app.canvas);
-
-  // const worldContainer = new Container();
-  // app.stage.addChild(worldContainer);
-
-  // app.stage.scale
-
   const bgTexture: Texture = await Assets.load("/background.png");
   const bgSprite: TilingSprite = new TilingSprite({
     texture: bgTexture,
@@ -69,7 +41,7 @@ import { calculateGravity } from "./math/calculateGravity";
   //   );
   // }
 
-  createSolarSystem({ x: 1000, y: 1000 });
+  createSolarSystem({ x: 20000, y: 0 });
 
   setupKeyboardListeners();
 
@@ -80,6 +52,9 @@ import { calculateGravity } from "./math/calculateGravity";
   console.log(worldContainer, "worldcointaner");
 
   app.ticker.add((time) => {
+    worldContainer.x = -player.x * worldContainer.scale.x + screenSize.x / 2;
+    worldContainer.y = -player.y * worldContainer.scale.y + screenSize.y / 2;
+
     if (keys["KeyW"]) {
       player.vel.x -=
         Math.cos(player.sprite.rotation + Math.PI / 2) * player.thrust;
@@ -95,12 +70,26 @@ import { calculateGravity } from "./math/calculateGravity";
     if (keys["KeyD"]) {
       player.sprite.rotation += (Math.PI * 2) / 180;
     }
+    if (keys["KeyV"]) {
+      // console.log(findClosestPlanet(player));
+
+      const closestPlanet = findClosestPlanet(player);
+      player.vel = add(
+        calculateOrbitSpeed(GForce, player, closestPlanet),
+        closestPlanet.vel
+      );
+    }
     if (keys["Space"]) {
       player.vel.x *= 0.9;
       player.vel.y *= 0.9;
     }
 
-    // console.log("loop");
+    // MUST FIX SO IT CAN HANDLE MULTIPLE SOLARSYSTEMS AT ONCE
+    world.solarSystems.forEach((solarSystem) => {
+      if (getDistance(player, solarSystem) < solarSystem.radius) {
+        player.solarSystem = solarSystem;
+      }
+    });
 
     worldContainer.x -= player.vel.x * simulationSpeed;
     worldContainer.y -= player.vel.y * simulationSpeed;
@@ -109,6 +98,13 @@ import { calculateGravity } from "./math/calculateGravity";
     bgSprite.tilePosition.y -= (player.vel.y / 10) * simulationSpeed;
 
     world.planets.forEach((planet) => {
+      const gravityForce = calculateGravity(GForce, player, planet);
+
+      const acceleration = divVar(gravityForce, player.mass);
+      const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
+      player.vel.x += deltaV.x;
+      player.vel.y += deltaV.y;
+
       world.planets.forEach((secondPlanet) => {
         if (planet === secondPlanet) {
           return;
@@ -122,14 +118,32 @@ import { calculateGravity } from "./math/calculateGravity";
         planet.vel.y += deltaV.y;
       });
 
-      planet.sprite.rotation -=
-        ((0.05 * time.deltaTime) / (planet.mass * 0.05)) * simulationSpeed;
+      // planet.sprite.rotation -= 0.05;
+      // planet.sprite.rotation -= (5 * time.deltaTime) / (planet.mass / 500);
     });
 
-
     world.worldObjects.forEach((worldObject) => {
-      changeWorldObject(worldObject, "x", worldObject.vel.x * time.deltaTime * simulationSpeed);
-      changeWorldObject(worldObject, "y", worldObject.vel.y * time.deltaTime * simulationSpeed);
+      changeWorldObject(
+        worldObject,
+        "x",
+        worldObject.vel.x * time.deltaTime * simulationSpeed
+      );
+      changeWorldObject(
+        worldObject,
+        "y",
+        worldObject.vel.y * time.deltaTime * simulationSpeed
+      );
     });
   });
 })();
+
+window.addEventListener("wheel", (event) => {
+  if (event.deltaY > 0) {
+    // worldContainer.
+    // cameraZoom;
+    worldContainer.scale = multVar(worldContainer.scale, 0.98);
+    // console.log("Scrollar NER:", event.deltaY);
+  } else {
+    worldContainer.scale = multVar(worldContainer.scale, 1.02);
+  }
+});

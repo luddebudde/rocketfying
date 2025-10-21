@@ -4,6 +4,7 @@ import { createSprite } from "./createSprite";
 import { createWorldObject } from "./createWorldObject";
 import { screenSize } from "./world";
 import { divVar } from "./math/vec";
+import { SolarSystem } from "./createSolarSystem";
 
 export type Player = {
   type: "player";
@@ -13,6 +14,9 @@ export type Player = {
   thrust: number;
   radius: number;
   rotation: number;
+  mass: number;
+  solarSystem: SolarSystem | undefined;
+
   sprite: Sprite;
 };
 
@@ -31,6 +35,9 @@ export const createPlayer = async (pos: Vec2) => {
     thrust: 0.1,
     radius: 50,
     rotation: rotation,
+    mass: 1,
+    solarSystem: undefined,
+
     sprite: sprite,
   };
 
