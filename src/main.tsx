@@ -1,18 +1,23 @@
 import { Assets, Container, Sprite, Texture, TilingSprite } from "pixi.js";
-import { createPlanet, origo, Vec2 } from "./createPlanet";
-import { cameraZoom, screenSize, simulationSpeed, world } from "./world";
+import {
+  createPlanet,
+  origo,
+  Vec2,
+} from "./worldGeneration/objects/createPlanet";
+import { screenSize, simulationSpeed, world } from "./world";
 import { app } from "./app";
 import { GForce } from "./world";
-import { createPlayer, player } from "./createPlayer";
+import { createPlayer, player } from "./worldGeneration/createPlayer";
 import { keys, setupKeyboardListeners } from "./keyListner";
 import { add, addVar, divVar, multVar, sub, subVar } from "./math/vec";
 import { changeWorldObject } from "./changeWorldObject";
 import { worldContainer } from "./createSprite";
-import { createSolarSystem } from "./createSolarSystem";
+import { createSolarSystem } from "./worldGeneration/createSolarSystem";
 import { calculateGravity } from "./math/calculateGravity";
 import { calculateOrbitSpeed } from "./math/calculateOrbitSpeed";
 import { findClosestPlanet } from "./findClosestPlanet";
 import { getDistance } from "./math/getDistance";
+import { generateGalaxy } from "./worldGeneration/generateGalaxy";
 
 (async () => {
   const bgTexture: Texture = await Assets.load("/background.png");
@@ -41,7 +46,8 @@ import { getDistance } from "./math/getDistance";
   //   );
   // }
 
-  createSolarSystem({ x: 20000, y: 0 });
+  // generateGalaxy();
+  createSolarSystem({ x: 10000, y: 0 });
 
   setupKeyboardListeners();
 
@@ -97,6 +103,10 @@ import { getDistance } from "./math/getDistance";
     bgSprite.tilePosition.x -= (player.vel.x / 10) * simulationSpeed;
     bgSprite.tilePosition.y -= (player.vel.y / 10) * simulationSpeed;
 
+    // From word.planets => world.worldObjects
+    // "planets" are not suns/blackholes/entities
+    // console.log(world.worldObjects);
+
     world.planets.forEach((planet) => {
       const gravityForce = calculateGravity(GForce, player, planet);
 
@@ -112,13 +122,21 @@ import { getDistance } from "./math/getDistance";
 
         const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
+        // console.log(gravityForce);
+
+        // console.log(planet, secondPlanet);
+
         const acceleration = divVar(gravityForce, planet.mass);
         const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
+
+        // console.log(deltaV);
+        //
+        // planet.vel = add(planet.vel, deltaV);
         planet.vel.x += deltaV.x;
         planet.vel.y += deltaV.y;
       });
 
-      // planet.sprite.rotation -= 0.05;
+      planet.sprite.rotation -= 0.0005;
       // planet.sprite.rotation -= (5 * time.deltaTime) / (planet.mass / 500);
     });
 

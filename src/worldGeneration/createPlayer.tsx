@@ -1,10 +1,10 @@
 import { Sprite } from "pixi.js";
-import { origo, Vec2 } from "./createPlanet";
-import { createSprite } from "./createSprite";
-import { createWorldObject } from "./createWorldObject";
-import { screenSize } from "./world";
-import { divVar } from "./math/vec";
+import { origo, Vec2 } from "./objects/createPlanet";
+import { createSprite } from "../createSprite";
+import { screenSize } from "../world";
+import { divVar } from "../math/vec";
 import { SolarSystem } from "./createSolarSystem";
+import { createWorldObject } from "./createWorldObject";
 
 export type Player = {
   type: "player";

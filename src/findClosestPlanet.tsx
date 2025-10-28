@@ -1,5 +1,5 @@
-import { origo, Planet, Vec2 } from "./createPlanet";
-import { Player } from "./createPlayer";
+import { origo, Planet, Vec2 } from "./worldGeneration/objects/createPlanet";
+import { Player } from "./worldGeneration/createPlayer";
 import { getDistance } from "./math/getDistance";
 
 export const findClosestPlanet = (seeker: Player | Planet): Planet => {
@@ -7,6 +7,8 @@ export const findClosestPlanet = (seeker: Player | Planet): Planet => {
   let shortestDist = Infinity;
 
   seeker.solarSystem?.planets.forEach((planet) => {
+    console.log(planet);
+
     if (planet === seeker) {
       return;
     }

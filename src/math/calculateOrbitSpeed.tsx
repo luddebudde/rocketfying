@@ -1,5 +1,5 @@
-import { Planet } from "../createPlanet";
-import { ProtoPlanet } from "../createSolarSystem";
+import { Planet } from "../worldGeneration/objects/createPlanet";
+import { ProtoPlanet } from "../worldGeneration/createSolarSystem";
 import { calculateGravity } from "./calculateGravity";
 import { getDirection, getDistance } from "./getDistance";
 import { lengthVec, multVar, rotateVec90 } from "./vec";

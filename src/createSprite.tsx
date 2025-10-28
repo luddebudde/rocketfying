@@ -1,5 +1,5 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
-import { Vec2 } from "./createPlanet";
+import { Vec2 } from "./worldGeneration/objects/createPlanet";
 import { app } from "./app";
 import { multVar } from "./math/vec";
 

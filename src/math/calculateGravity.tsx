@@ -1,4 +1,4 @@
-import { Planet, Vec2 } from "../createPlanet";
+import { Planet, Vec2 } from "../worldGeneration/objects/createPlanet";
 import { getDirection, getDistance } from "./getDistance";
 import { multVar } from "./vec";
 
@@ -19,6 +19,8 @@ export const calculateGravity = (
     GForce * ((planet1.mass * planet2.mass) / (dist * dist)),
     maxForce
   );
+
+  // force = force ?? 0;
 
   return multVar(direction, force);
 };

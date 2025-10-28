@@ -1,11 +1,12 @@
 import { Container } from "pixi.js";
-import { Planet, Vec2 } from "./createPlanet";
-import { Player } from "./createPlayer";
+import { Planet, Vec2 } from "./worldGeneration/objects/createPlanet";
+import { Player } from "./worldGeneration/createPlayer";
 import { app } from "./app";
-import { SolarSystem } from "./createSolarSystem";
+import { SolarSystem } from "./worldGeneration/createSolarSystem";
+import { Blackhole } from "./worldGeneration/objects/createBlackhole";
 
 type World = {
-  planets: Planet[];
+  planets: (Planet | Sun | Blackhole)[];
   worldObjects: (Planet | Player)[];
   solarSystems: SolarSystem[];
 };
@@ -24,6 +25,7 @@ export const screenSize: Vec2 = {
 };
 
 export const GForce: number = 0.01;
+export const worldScale = 1;
 export const simulationSpeed: number = 1;
 // export const getScreenSize = (): Vec2 => ({
 //   x: app.screen.width,

@@ -13,7 +13,7 @@ await app.init({
   preference: "webgl",
   background: "#000000",
   antialias: true,
-  // canvas: ,
+  // canvas: autoDetectRenderer(),
 });
 
 // export const worldContainer = Container()

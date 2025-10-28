@@ -1,4 +1,4 @@
-import { Vec2 } from "./createPlanet";
+import { Vec2 } from "./worldGeneration/objects/createPlanet";
 
 export const changeWorldObject = (object: any, key: string, value: number) => {
   object[key] += value;

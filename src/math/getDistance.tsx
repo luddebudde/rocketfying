@@ -1,4 +1,4 @@
-import { Vec2 } from "../createPlanet";
+import { Vec2 } from "../worldGeneration/objects/createPlanet";
 
 export const getDistance = (obj1: any, obj2: any) => {
   const xDiff: number = obj1.x - obj2.x;
