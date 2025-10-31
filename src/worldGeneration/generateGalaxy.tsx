@@ -1,7 +1,11 @@
 import { worldScale } from "../world";
 import { createPlanet, origo, Planet, Vec2 } from "./objects/createPlanet";
-import { createSolarSystem } from "./createSolarSystem";
-import { Blackhole } from "./objects/createBlackhole";
+import { createSolarSystem, ProtoPlanet } from "./createSolarSystem";
+import {
+  Blackhole,
+  createBlackhole,
+  ProtoBlackhole,
+} from "./objects/createBlackhole";
 import { Sun } from "./objects/createSun";
 
 export type Galaxy = {
@@ -11,34 +15,38 @@ export type Galaxy = {
 };
 
 export const generateGalaxy = () => {
-  const galaxy = {
-    blackhole: {},
+  const galaxy: Galaxy = {
+    blackhole: {} as Blackhole,
     solarSystems: [],
     planets: [],
   };
 
-  //   const randomSolarSystemCount = Math.random() * 5 + 2;
-
-  const randomSolarSystemCount = 1;
   const blackHoleSize = 25000 * worldScale;
 
-  const blackhole = {
-    x: 0,
-    y: 0,
+  const protoBlackhole: ProtoBlackhole = {
+    type: "blackhole",
+    name: "0809-04Au",
+    x: 25000,
+    y: 25000,
     radius: blackHoleSize,
-    mass: blackHoleSize * 5,
+    mass: blackHoleSize * blackHoleSize,
+    vel: origo(),
+
+    galaxy: galaxy,
   };
 
   // 500000, 500000 <= Mass and size
-  createPlanet(origo(), blackhole.radius, "blackhole");
 
+  createBlackhole(protoBlackhole);
+
+  const randomSolarSystemCount = 5;
   for (let i = 0; i < randomSolarSystemCount; i++) {
-    const distanceOut = 50000 + blackHoleSize;
+    const distanceOut = 250000 + blackHoleSize;
     const angle = Math.random() * 2 * Math.PI;
     const relPos: Vec2 = {
       x: Math.cos(angle) * distanceOut * worldScale,
       y: Math.sin(angle) * distanceOut * worldScale,
     };
-    createSolarSystem(relPos, blackhole);
+    createSolarSystem(relPos, galaxy);
   }
 };

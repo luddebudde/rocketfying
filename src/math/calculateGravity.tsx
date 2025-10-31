@@ -21,6 +21,7 @@ export const calculateGravity = (
   );
 
   // force = force ?? 0;
+  // console.log(planet1, planet2);
 
   return multVar(direction, force);
 };

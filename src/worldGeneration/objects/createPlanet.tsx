@@ -4,7 +4,7 @@ import { app } from "../../app";
 
 import { createSprite } from "../../createSprite";
 import { findElement } from "../../findElement";
-import { SolarSystem } from "../createSolarSystem";
+import { ProtoPlanet, SolarSystem } from "../createSolarSystem";
 import { createWorldObject } from "../createWorldObject";
 
 export type Planet = {
@@ -18,7 +18,7 @@ export type Planet = {
   mass: number;
   radius: number;
   rotation: number;
-  solarSystem: SolarSystem;
+  homeSystem: SolarSystem;
 
   sprite: Sprite;
 };
@@ -33,11 +33,8 @@ export const origo = (): Vec2 => {
 };
 
 export const createPlanet = async (
-  pos: Vec2,
-  size: number,
-  spriteName: string,
-  homeSystem: SolarSystem,
-  vel: Vec2
+  protoPlanet: ProtoPlanet,
+  spriteName: string
 ) => {
   const sprites = [
     ["earth", "/planet.png"],
@@ -48,29 +45,29 @@ export const createPlanet = async (
   const rotation = Math.random() * Math.PI * 2;
   const sprite: Sprite = await createSprite(
     findElement(sprites, spriteName)[1],
-    pos,
-    size,
-    size,
+    { x: protoPlanet.y, y: protoPlanet.y },
+    protoPlanet.radius * 2,
+    protoPlanet.radius * 2,
     rotation
   );
 
   const planet: Planet = {
+    ...protoPlanet,
+    name: "hello",
     type: "planet",
-    x: pos.x,
-    y: pos.y,
-    vel: vel,
-    // width: size,
-    // height: size,
-    mass: size * size,
-    radius: size / 2,
+
     rotation: rotation,
-    solarSystem: homeSystem,
+    homeSystem: protoPlanet.homeSystem,
 
     sprite: sprite,
   };
 
-  homeSystem.planets.push(planet);
+  // console.log(planet);
+
+  protoPlanet.homeSystem.planets.push(planet);
 
   createWorldObject(planet);
   world.planets.push(planet);
+
+  console.log(protoPlanet.homeSystem);
 };

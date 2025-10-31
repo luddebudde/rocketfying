@@ -4,55 +4,64 @@ import { calculateGravity } from "../math/calculateGravity";
 import { GForce, world, worldScale } from "../world";
 import { getDirection, getDistance } from "../math/getDistance";
 import { calculateOrbitSpeed } from "../math/calculateOrbitSpeed";
-import { createSun } from "./objects/createSun";
+import { createSun, Sun } from "./objects/createSun";
+import { Galaxy } from "./generateGalaxy";
 
 export type ProtoPlanet = {
-  size: number;
   mass: number;
   x: number;
   y: number;
+  radius: number;
   vel: Vec2;
+  homeSystem: SolarSystem;
 };
 
 export type SolarSystem = {
   name: string;
-  sun: Planet | ProtoPlanet;
+  sun: Sun;
   planets: Planet[];
   x: number;
   y: number;
   radius: number;
 };
 
-export const createSolarSystem = (centerPos: Vec2) => {
+export const createSolarSystem = (centerPos: Vec2, galaxy: Galaxy) => {
+  const planetCount = Math.ceil(Math.random() * 8 + 3);
+  // const planetCount = 1;
+
   const solarSystem: SolarSystem = {
     name: "",
-    sun: {},
+    sun: {} as Sun,
     planets: [],
     x: centerPos.x,
     y: centerPos.y,
     radius: 0,
   };
 
-  const planetCount = Math.ceil(Math.random() * 8 + 3);
-  const sunSize = 10000 * worldScale;
+  const sunSize = 5000 * worldScale;
   const sun: ProtoPlanet = {
-    size: sunSize,
-    mass: sunSize,
     x: centerPos.x,
     y: centerPos.y,
+    radius: sunSize,
+    mass: sunSize * sunSize,
     vel: origo(),
+    homeSystem: solarSystem,
+    // galaxy: galaxy,
   };
+
+  // sun.vel = calculateOrbitSpeed(GForce, sun, galaxy.blackhole);
 
   // sun.vel = calculateOrbitSpeed(GForce, sun, blackhole);
 
   let distanceFromSurface = 100;
-  const averageDistStep = 4500;
+  const averageDistStep = 14500;
 
-  createPlanet(centerPos, sun.size, "sun", solarSystem, origo());
+  // createPlanet(sun, "sun");
+  createSun(sun, "sun", galaxy);
   for (let i = 0; i < planetCount; i++) {
-    const planetSize = 0.1 * sun.size;
+    const planetSize = 0.05 * sun.radius;
     // TODO random distance from sun's surface
-    const minDist = (sun.size / 2 + planetSize / 2) * 1.2;
+    const minDist = (sun.radius * 2 + planetSize / 2) * 1.2;
     const additionalDist =
       averageDistStep * i - (Math.random() + 0.5) * planetSize * 3;
     const distanceOut = Math.max(
@@ -70,16 +79,17 @@ export const createSolarSystem = (centerPos: Vec2) => {
     const pos = add(relPos, centerPos);
 
     const planet: ProtoPlanet = {
-      size: planetSize,
-      mass: planetSize,
+      radius: planetSize,
+      mass: planetSize * planetSize,
       x: pos.x,
       y: pos.y,
       vel: origo(),
+      homeSystem: solarSystem,
     };
 
     planet.vel = calculateOrbitSpeed(GForce, planet, sun);
 
-    createPlanet(pos, planet.size, "earth", solarSystem, planet.vel);
+    createPlanet(planet, "earth");
   }
 
   // console.log(solarSystem);

@@ -1,13 +1,14 @@
 import { Planet } from "../worldGeneration/objects/createPlanet";
-import { ProtoPlanet } from "../worldGeneration/createSolarSystem";
+import { ProtoPlanet, SolarSystem } from "../worldGeneration/createSolarSystem";
 import { calculateGravity } from "./calculateGravity";
 import { getDirection, getDistance } from "./getDistance";
 import { lengthVec, multVar, rotateVec90 } from "./vec";
+import { Blackhole } from "../worldGeneration/objects/createBlackhole";
 
 export const calculateOrbitSpeed = (
   GForce: number,
-  planet: Planet | ProtoPlanet,
-  sun: Planet | ProtoPlanet
+  planet: Pick<Planet, "x" | "y" | "mass">,
+  sun: Pick<Planet, "x" | "y" | "mass">
 ) => {
   const gravityForce = calculateGravity(GForce, planet, sun);
   // When the orbit is circular, the centripetal force is equal to the gravitational force.
@@ -22,6 +23,8 @@ export const calculateOrbitSpeed = (
   const dirToSun = getDirection(planet, sun);
   const tangentDir = rotateVec90(dirToSun);
   const orbitalVel = multVar(tangentDir, speed);
+
+  // console.log(gravityForce);
 
   return orbitalVel;
 };

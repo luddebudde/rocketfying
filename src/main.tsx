@@ -46,8 +46,8 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
   //   );
   // }
 
-  // generateGalaxy();
-  createSolarSystem({ x: 10000, y: 0 });
+  generateGalaxy();
+  // createSolarSystem({ x: 10000, y: 0 });
 
   setupKeyboardListeners();
 
@@ -108,12 +108,14 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
     // console.log(world.worldObjects);
 
     world.planets.forEach((planet) => {
-      const gravityForce = calculateGravity(GForce, player, planet);
+      if (simulationSpeed <= 3) {
+        const gravityForce = calculateGravity(GForce, player, planet);
 
-      const acceleration = divVar(gravityForce, player.mass);
-      const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
-      player.vel.x += deltaV.x;
-      player.vel.y += deltaV.y;
+        const acceleration = divVar(gravityForce, player.mass);
+        const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
+        player.vel.x += deltaV.x;
+        player.vel.y += deltaV.y;
+      }
 
       world.planets.forEach((secondPlanet) => {
         if (planet === secondPlanet) {
@@ -122,16 +124,8 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
 
         const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
-        // console.log(gravityForce);
-
-        // console.log(planet, secondPlanet);
-
         const acceleration = divVar(gravityForce, planet.mass);
         const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
-
-        // console.log(deltaV);
-        //
-        // planet.vel = add(planet.vel, deltaV);
         planet.vel.x += deltaV.x;
         planet.vel.y += deltaV.y;
       });
