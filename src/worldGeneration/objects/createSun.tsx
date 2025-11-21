@@ -9,6 +9,8 @@ import { createWorldObject } from "../createWorldObject";
 import { origo, Vec2 } from "./createPlanet";
 import { Galaxy } from "../generateGalaxy";
 import { calculateOrbitSpeed } from "../../math/calculateOrbitSpeed";
+import { player } from "../createPlayer";
+import { add } from "../../math/vec";
 
 export type Sun = {
   type: "sun";
@@ -32,7 +34,8 @@ export const createSun = async (
   // pos: Vec2,
   // size: number,
   spriteName: string,
-  galaxy: Galaxy
+  galaxy: Galaxy,
+  solarSystem: SolarSystem
   // vel: Vec2 = origo()
 ) => {
   const sprites = [["sun", "/sun.png"]];
@@ -46,24 +49,32 @@ export const createSun = async (
     rotation
   );
 
-  console.log(protoSun, galaxy.blackhole);
+  const vel = calculateOrbitSpeed(GForce, protoSun, galaxy.blackhole);
 
   const sun: Sun = {
     ...protoSun,
     type: "sun",
     name: "the SUN",
     rotation: rotation,
-    vel: calculateOrbitSpeed(GForce, protoSun, galaxy.blackhole),
+    vel: vel,
+    galaxy: galaxy,
+    homeSystem: solarSystem,
 
     sprite: sprite,
   };
 
+  player.vel = calculateOrbitSpeed(GForce, player, sun);
+  player.vel = add(player.vel, sun.vel);
+  solarSystem.sun = sun;
+
   // galaxy.solarSystems.push(sun);
 
-  sun.homeSystem.sun = sun;
+  // sun.homeSystem.sun = sun;
 
   createWorldObject(sun);
   world.planets.push(sun);
+
+  return sun;
 
   // return sun;
 };

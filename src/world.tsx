@@ -4,8 +4,9 @@ import { Player } from "./worldGeneration/createPlayer";
 import { app } from "./app";
 import { SolarSystem } from "./worldGeneration/createSolarSystem";
 import { Blackhole } from "./worldGeneration/objects/createBlackhole";
+import { Sun } from "./worldGeneration/objects/createSun";
 
-type World = {
+export type World = {
   planets: (Planet | Sun | Blackhole)[];
   worldObjects: (Planet | Player)[];
   solarSystems: SolarSystem[];
@@ -24,9 +25,9 @@ export const screenSize: Vec2 = {
   y: app.screen.height,
 };
 
-export const GForce: number = 0.01;
+export const GForce: number = 0.00001;
 export const worldScale = 1;
-export const simulationSpeed: number = 125;
+export const simulationSpeed: number = 1;
 // export const getScreenSize = (): Vec2 => ({
 //   x: app.screen.width,
 //   y: app.screen.height,

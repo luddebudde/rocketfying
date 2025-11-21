@@ -6,8 +6,12 @@ export const findClosestPlanet = (seeker: Player | Planet): Planet => {
   let closest: Planet = {};
   let shortestDist = Infinity;
 
-  seeker.solarSystem?.planets.forEach((planet) => {
-    console.log(planet);
+  // console.log(seeker.);
+
+  const solarSystem = seeker.homesystem;
+
+  solarSystem.planets.forEach((planet) => {
+    console.log(solarSystem.planets);
 
     if (planet === seeker) {
       return;
@@ -18,6 +22,12 @@ export const findClosestPlanet = (seeker: Player | Planet): Planet => {
       closest = planet;
     }
   });
+
+  console.log(solarSystem);
+
+  if (shortestDist > solarSystem.planets[0].radius * 5) {
+    closest = solarSystem.sun;
+  }
 
   //   for (const planet of world) {
   //     if (planet === seeker) continue; // hoppa över om samma objekt

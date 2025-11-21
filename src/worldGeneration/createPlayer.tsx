@@ -15,7 +15,7 @@ export type Player = {
   radius: number;
   rotation: number;
   mass: number;
-  solarSystem: SolarSystem | undefined;
+  homesystem: SolarSystem | undefined;
 
   sprite: Sprite;
 };
@@ -33,10 +33,10 @@ export const createPlayer = async (pos: Vec2) => {
     y: pos.y,
     vel: origo(),
     thrust: 0.1,
-    radius: 50,
+    radius: 1,
     rotation: rotation,
     mass: 1,
-    solarSystem: undefined,
+    homesystem: undefined,
 
     sprite: sprite,
   };

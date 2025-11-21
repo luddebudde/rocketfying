@@ -18,6 +18,7 @@ import { calculateOrbitSpeed } from "./math/calculateOrbitSpeed";
 import { findClosestPlanet } from "./findClosestPlanet";
 import { getDistance } from "./math/getDistance";
 import { generateGalaxy } from "./worldGeneration/generateGalaxy";
+import { drawOrbit } from "./drawOrbit";
 
 (async () => {
   const bgTexture: Texture = await Assets.load("/background.png");
@@ -32,6 +33,7 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
   console.log("bgTexture size:", bgTexture.width, bgTexture.height);
   console.log("app.screen:", app.screen.width, app.screen.height);
   bgSprite.tileScale.set(1.2, 1.2);
+  bgSprite.alpha = 0;
 
   app.stage.addChild(bgSprite);
 
@@ -55,11 +57,13 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
   player.sprite.y = app.screen.height / 2;
   worldContainer.addChild(player.sprite);
 
-  console.log(worldContainer, "worldcointaner");
+  // console.log(worldContainer, "worldcointaner");
 
   app.ticker.add((time) => {
     worldContainer.x = -player.x * worldContainer.scale.x + screenSize.x / 2;
     worldContainer.y = -player.y * worldContainer.scale.y + screenSize.y / 2;
+
+    // bgSprite.scale = worldContainer.scale;
 
     if (keys["KeyW"]) {
       player.vel.x -=
@@ -76,10 +80,21 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
     if (keys["KeyD"]) {
       player.sprite.rotation += (Math.PI * 2) / 180;
     }
+    if (keys["ShiftLeft"]) {
+      player.thrust = player.thrust + 0.01;
+      console.log(player.thrust);
+    }
+    if (keys["ControlLeft"]) {
+      player.thrust = Math.max(player.thrust - 0.01, 0);
+      console.log(player.thrust);
+    }
+
     if (keys["KeyV"]) {
       // console.log(findClosestPlanet(player));
 
       const closestPlanet = findClosestPlanet(player);
+      console.log(closestPlanet);
+
       player.vel = add(
         calculateOrbitSpeed(GForce, player, closestPlanet),
         closestPlanet.vel
@@ -93,34 +108,44 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
     // MUST FIX SO IT CAN HANDLE MULTIPLE SOLARSYSTEMS AT ONCE
     world.solarSystems.forEach((solarSystem) => {
       if (getDistance(player, solarSystem) < solarSystem.radius) {
-        player.solarSystem = solarSystem;
+        // console.log(solarSystem);
+
+        player.homesystem = solarSystem;
       }
     });
 
-    worldContainer.x -= player.vel.x * simulationSpeed;
-    worldContainer.y -= player.vel.y * simulationSpeed;
-
-    bgSprite.tilePosition.x -= (player.vel.x / 10) * simulationSpeed;
-    bgSprite.tilePosition.y -= (player.vel.y / 10) * simulationSpeed;
+    // bgSprite.tilePosition.x -= (player.vel.x / 10) * simulationSpeed;
+    // bgSprite.tilePosition.y -= (player.vel.y / 10) * simulationSpeed;
 
     // From word.planets => world.worldObjects
     // "planets" are not suns/blackholes/entities
     // console.log(world.worldObjects);
 
-    world.planets.forEach((planet) => {
-      if (simulationSpeed <= 3) {
-        const gravityForce = calculateGravity(GForce, player, planet);
+    drawOrbit(GForce, time, world, player);
 
-        const acceleration = divVar(gravityForce, player.mass);
-        const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
-        player.vel.x += deltaV.x;
-        player.vel.y += deltaV.y;
-      }
+    world.worldObjects.forEach((planet) => {
+      // if (simulationSpeed <= 10) {
+      //   const gravityForce = calculateGravity(GForce, player, planet);
 
-      world.planets.forEach((secondPlanet) => {
-        if (planet === secondPlanet) {
+      //   const acceleration = divVar(gravityForce, player.mass);
+      //   const deltaV = multVar(acceleration, time.deltaTime * simulationSpeed);
+      //   player.vel.x += deltaV.x;
+      //   player.vel.y += deltaV.y;
+      // }
+
+      // if (planet.type === "planet") {
+      //   drawOrbit(planet);
+      // }
+
+      world.worldObjects.forEach((secondPlanet) => {
+        if (planet === secondPlanet || planet.type === "blackhole") {
           return;
         }
+        // if (planet.type === "player") {
+        //   // console.log(player);
+
+        //   return;
+        // }
 
         const gravityForce = calculateGravity(GForce, planet, secondPlanet);
 
@@ -133,6 +158,8 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
       planet.sprite.rotation -= 0.0005;
       // planet.sprite.rotation -= (5 * time.deltaTime) / (planet.mass / 500);
     });
+
+    // console.log(time.deltaTime);
 
     world.worldObjects.forEach((worldObject) => {
       changeWorldObject(
@@ -150,12 +177,21 @@ import { generateGalaxy } from "./worldGeneration/generateGalaxy";
 })();
 
 window.addEventListener("wheel", (event) => {
+  // if (event.deltaY > 0) {
+  //   // worldContainer.
+  //   // cameraZoom;
+  //   worldContainer.scale = multVar(worldContainer.scale, 0.98);
+  //   // console.log("Scrollar NER:", event.deltaY);
+  // } else {
+  //   worldContainer.scale = multVar(worldContainer.scale, 1.02);
+  // }
   if (event.deltaY > 0) {
     // worldContainer.
     // cameraZoom;
-    worldContainer.scale = multVar(worldContainer.scale, 0.98);
+    worldContainer.scale = multVar(worldContainer.scale, 0.95);
+
     // console.log("Scrollar NER:", event.deltaY);
   } else {
-    worldContainer.scale = multVar(worldContainer.scale, 1.02);
+    worldContainer.scale = multVar(worldContainer.scale, 1.05);
   }
 });

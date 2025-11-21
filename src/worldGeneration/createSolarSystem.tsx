@@ -25,7 +25,7 @@ export type SolarSystem = {
   radius: number;
 };
 
-export const createSolarSystem = (centerPos: Vec2, galaxy: Galaxy) => {
+export const createSolarSystem = async (centerPos: Vec2, galaxy: Galaxy) => {
   const planetCount = Math.ceil(Math.random() * 8 + 3);
   // const planetCount = 1;
 
@@ -38,26 +38,32 @@ export const createSolarSystem = (centerPos: Vec2, galaxy: Galaxy) => {
     radius: 0,
   };
 
-  const sunSize = 5000 * worldScale;
-  const sun: ProtoPlanet = {
+  const sunSize = 10000 * worldScale;
+  // const sunSize = 10 * worldScale;
+  const protoSun: ProtoPlanet = {
+    type: "sun",
     x: centerPos.x,
     y: centerPos.y,
     radius: sunSize,
-    mass: sunSize * sunSize,
+    mass: sunSize * sunSize * sunSize,
     vel: origo(),
-    homeSystem: solarSystem,
+    // homeSystem: solarSystem,
     // galaxy: galaxy,
   };
 
+  // const blackhole = galaxy.blackhole;
   // sun.vel = calculateOrbitSpeed(GForce, sun, galaxy.blackhole);
 
   // sun.vel = calculateOrbitSpeed(GForce, sun, blackhole);
 
   let distanceFromSurface = 100;
-  const averageDistStep = 14500;
+  const averageDistStep = 15000;
 
   // createPlanet(sun, "sun");
-  createSun(sun, "sun", galaxy);
+
+  const sun = await createSun({ ...protoSun }, "sun", galaxy, solarSystem);
+  console.log(sun);
+
   for (let i = 0; i < planetCount; i++) {
     const planetSize = 0.05 * sun.radius;
     // TODO random distance from sun's surface
@@ -80,16 +86,22 @@ export const createSolarSystem = (centerPos: Vec2, galaxy: Galaxy) => {
 
     const planet: ProtoPlanet = {
       radius: planetSize,
-      mass: planetSize * planetSize,
+      mass: planetSize * planetSize * planetSize,
       x: pos.x,
       y: pos.y,
       vel: origo(),
       homeSystem: solarSystem,
     };
 
-    planet.vel = calculateOrbitSpeed(GForce, planet, sun);
+    // console.log(galaxy);
+    // console.log(galaxy.blackhole);
 
-    createPlanet(planet, "earth");
+    // planet.vel = calculateOrbitSpeed(GForce, planet, sun);
+    // planet.vel = add(planet.vel, sun.vel);
+
+    // console.log(solarSystem);
+
+    await createPlanet(planet, "earth", sun, galaxy);
   }
 
   // console.log(solarSystem);

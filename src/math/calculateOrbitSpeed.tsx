@@ -26,5 +26,12 @@ export const calculateOrbitSpeed = (
 
   // console.log(gravityForce);
 
+  // console.log(orbitalVel);
+
+  if (planet.type === "sun") {
+    console.log(gravityForce);
+    console.log(dirToSun);
+  }
+
   return orbitalVel;
 };

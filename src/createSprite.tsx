@@ -4,6 +4,8 @@ import { app } from "./app";
 import { multVar } from "./math/vec";
 
 export const worldContainer = new Container();
+app.stage.addChild(worldContainer);
+// worldContainer.scale = 0.001;
 // app.stage.addChild(worldContainer);
 export const createSprite = async (
   img: string,
@@ -35,8 +37,8 @@ export const createSprite = async (
   // sprite.scale *= cameraScale;
 
   // app.stage.addChild(sprite);
-  if (!app.stage.getChildByLabel(worldContainer)) {
-    app.stage.addChild(worldContainer);
-  }
+  // if (!app.stage.getChildByLabel(worldContainer)) {
+
+  // }
   return sprite;
 };

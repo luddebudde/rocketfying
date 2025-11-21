@@ -7,6 +7,7 @@ import {
   ProtoBlackhole,
 } from "./objects/createBlackhole";
 import { Sun } from "./objects/createSun";
+import { player } from "./createPlayer";
 
 export type Galaxy = {
   blackhole: Blackhole;
@@ -21,7 +22,8 @@ export const generateGalaxy = () => {
     planets: [],
   };
 
-  const blackHoleSize = 25000 * worldScale;
+  const blackHoleSize = 1000000 * worldScale;
+  // const blackHoleSize = 1 * worldScale;
 
   const protoBlackhole: ProtoBlackhole = {
     type: "blackhole",
@@ -35,18 +37,27 @@ export const generateGalaxy = () => {
     galaxy: galaxy,
   };
 
+  console.log(protoBlackhole.mass);
+
   // 500000, 500000 <= Mass and size
 
   createBlackhole(protoBlackhole);
+  // galaxy.blackhole = createBlackhole(protoBlackhole);
 
-  const randomSolarSystemCount = 5;
+  // const randomSolarSystemCount = 5;
+  const randomSolarSystemCount = 1;
   for (let i = 0; i < randomSolarSystemCount; i++) {
-    const distanceOut = 250000 + blackHoleSize;
+    const distanceOut = blackHoleSize * 5;
     const angle = Math.random() * 2 * Math.PI;
     const relPos: Vec2 = {
       x: Math.cos(angle) * distanceOut * worldScale,
       y: Math.sin(angle) * distanceOut * worldScale,
     };
     createSolarSystem(relPos, galaxy);
+
+    player.x = relPos.x + 8000;
+    player.y = relPos.y + 8000;
+
+    // player.vel =
   }
 };

@@ -1,11 +1,16 @@
 import { Assets, Container, Sprite, Texture } from "pixi.js";
-import { world } from "../../world";
+import { GForce, world } from "../../world";
 import { app } from "../../app";
 
 import { createSprite } from "../../createSprite";
 import { findElement } from "../../findElement";
 import { ProtoPlanet, SolarSystem } from "../createSolarSystem";
 import { createWorldObject } from "../createWorldObject";
+import { add } from "../../math/vec";
+import { calculateOrbitSpeed } from "../../math/calculateOrbitSpeed";
+import { Galaxy } from "../generateGalaxy";
+import { Sun } from "./createSun";
+import { Blackhole } from "./createBlackhole";
 
 export type Planet = {
   type: "planet";
@@ -34,7 +39,9 @@ export const origo = (): Vec2 => {
 
 export const createPlanet = async (
   protoPlanet: ProtoPlanet,
-  spriteName: string
+  spriteName: string,
+  sun: Pick<Sun, "x" | "y" | "mass" | "vel">,
+  galaxy: Galaxy
 ) => {
   const sprites = [
     ["earth", "/planet.png"],
@@ -45,7 +52,7 @@ export const createPlanet = async (
   const rotation = Math.random() * Math.PI * 2;
   const sprite: Sprite = await createSprite(
     findElement(sprites, spriteName)[1],
-    { x: protoPlanet.y, y: protoPlanet.y },
+    { x: protoPlanet.x, y: protoPlanet.y },
     protoPlanet.radius * 2,
     protoPlanet.radius * 2,
     rotation
@@ -55,12 +62,21 @@ export const createPlanet = async (
     ...protoPlanet,
     name: "hello",
     type: "planet",
-
+    vel: origo(),
     rotation: rotation,
     homeSystem: protoPlanet.homeSystem,
 
     sprite: sprite,
   };
+
+  // console.log(protoPlanet.x, protoPlanet.y, sun.x, sun.y, sun.vel);
+  // console.log(sun);
+
+  // console.log(galaxy);
+
+  planet.vel = add(calculateOrbitSpeed(GForce, planet, sun), sun.vel);
+
+  // planet.vel = sunOrbit;
 
   // console.log(planet);
 
@@ -69,5 +85,5 @@ export const createPlanet = async (
   createWorldObject(planet);
   world.planets.push(planet);
 
-  console.log(protoPlanet.homeSystem);
+  // console.log(protoPlanet.homeSystem);
 };
